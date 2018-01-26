@@ -1,5 +1,3 @@
-import cheerio from 'cheerio';
-
 import {
   degreeOrNull,
   inchOrNull,
@@ -7,7 +5,6 @@ import {
   weatherStatusOrNull,
   liftTrailStatusOrNull,
   notEmptyStringOrNull,
-  trailLevelOrNull,
   resortStatusOrNull,
 } from '../weatherUtil';
 
@@ -35,38 +32,39 @@ export const parseMtRoseSnow = async ($) => {
   const weatherIcon = $('.sr-current-cond .sr-cc-wrapper .sr-text').first().text().trim();
   const status = $('.sr-mountain-notes.sr-row .sr-text p').first().text().trim();
   const temperature = $('.sr-current-cond.sr-row.row .col-sm-6 .sr-cc-wrapper.row .sr-temp h1').text().trim();
-  //24 Hours
+  // 24 Hours
   const newSnow24Hr = $('.sr-snow-totals.sr-row.row .sr-snow-total h2').first().text().trim();
-  //Base
-  const snowDepthBase = $('.sr-snow-totals.sr-row.row .sr-snow-total h2').slice(2,3).text().trim();
-  const snowDepthSummit = $('.sr-snow-totals.sr-row.row .sr-snow-total h2').slice(2,3).text().slice(3).trim();
+  // Base
+  const snowDepthBase = $('.sr-snow-totals.sr-row.row .sr-snow-total h2').slice(2, 3).text().trim();
+  const snowDepthSummit = $('.sr-snow-totals.sr-row.row .sr-snow-total h2').slice(2, 3).text().slice(3)
+    .trim();
   return {
     ...initialSnow,
     weatherIcon: weatherStatusOrNull(weatherIcon),
     status: resortStatusOrNull(status),
     temperature: degreeOrNull(temperature),
-    newSnow: numberOrNull(Number.parseInt(newSnow24Hr)),
+    newSnow: numberOrNull(Number.parseInt(newSnow24Hr, 10)),
     snowDepthBase: inchOrNull(snowDepthBase),
     snowDepthSummit: inchOrNull(snowDepthSummit),
   };
-}
+};
 
-export const parseMtRoseLiftCounts = async ($) => {
+export const parseMtRoseLiftCounts = async () => {
   return {
     ...initialLifts,
   };
-}
+};
 
-export const parseMtRoseTrailCounts = async ($) => {
+export const parseMtRoseTrailCounts = async () => {
   return {
     ...initialTrails,
   };
-}
+};
 
 export const parseMtRoseLifts = async ($) => {
   const list = [];
 
-  $('.sr-lifts-wrapper .sr-ski-lift-wrapper').map((index, rowElement) => {
+  $('.sr-lifts-wrapper .sr-ski-lift-wrapper').each((index, rowElement) => {
     const nameText = $(rowElement).find('.sr-lift-name').text().trim();
     const statusText = $(rowElement).find('.sr-lift-status').text().trim();
     //
@@ -80,15 +78,14 @@ export const parseMtRoseLifts = async ($) => {
       category,
     };
 
-    list.push(lift)
-
-
+    list.push(lift);
   });
- return list;
-}
 
-export const parseMtRoseTrails = async ($) => {
+  return list;
+};
+
+export const parseMtRoseTrails = async () => {
   const list = [];
 
- return list;
-}
+  return list;
+};

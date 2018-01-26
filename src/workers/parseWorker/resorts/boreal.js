@@ -1,7 +1,4 @@
-// import cheerio from 'cheerio';
-
 import {
-  degreeOrNull,
   inchOrNull,
   resortStatusOrNull,
   numberOrNull,
@@ -37,13 +34,16 @@ export const parseBorealSnow = async (data) => {
     return {
       ...initialSnow,
     };
-  };
+  }
+
+  /* eslint-disable max-len */
   const weatherIcon = data.default_data[2].weather_report.forecast.forecast.simpleforecast.forecastday[0].conditions;
   const status = data.default_data[10].wrapper_content[0].items[5].body;
   const temperature = data.default_data[2].weather_report.forecast.forecast.simpleforecast.forecastday[0].high.fahrenheit;
-  //24 Hours
+  /* eslint-enable */
+  // 24 Hours
   const newSnow24Hr = data.default_data[0].snow_report['24_hour'][0];
-  //Base
+  // Base
   // const snowDepthBase =
 
   const snowDepthSummit = data.default_data[0].snow_report.season.Base.base;
@@ -51,12 +51,12 @@ export const parseBorealSnow = async (data) => {
     ...initialSnow,
     weatherIcon: weatherStatusOrNull(weatherIcon),
     status: resortStatusOrNull(status),
-    temperature: Number.parseInt(temperature),
+    temperature: Number.parseInt(temperature, 10),
     newSnow: inchOrNull(newSnow24Hr),
     // snowDepthBase: inchOrNull(snowDepthBase),
-    snowDepthSummit: Number.parseInt(snowDepthSummit),
+    snowDepthSummit: Number.parseInt(snowDepthSummit, 10),
   };
-}
+};
 
 export const parseBorealLiftCounts = async (data) => {
   if (!data.default_data) {
@@ -70,8 +70,8 @@ export const parseBorealLiftCounts = async (data) => {
     ...initialLifts,
     total: numberOrNull(totalLifts),
     open: numberOrNull(openLifts),
-  }
-}
+  };
+};
 
 export const parseBorealTrailCounts = async (data) => {
   if (!data.default_data) {
@@ -85,16 +85,15 @@ export const parseBorealTrailCounts = async (data) => {
     ...initialTrails,
     total: numberOrNull(totalTrails),
     open: numberOrNull(openTrails),
-  }
-}
+  };
+};
 
 export const parseBorealLifts = async (data) => {
   if (!data.level_3) {
     return [];
   }
-  const list = [];
 
-  data.level_3.field_dynamic_content.items.map(liftItem => {
+  const list = data.level_3.field_dynamic_content.items.map((liftItem) => {
     const name = liftItem.title;
     const status = boralLiftTrailStatusOrNull(liftItem.field_lift_open);
     const category = notEmptyStringOrNull(liftItem.field_area);
@@ -103,29 +102,30 @@ export const parseBorealLifts = async (data) => {
       status,
       category,
     };
-    list.push(lift)
-  })
- return list;
-}
+    return lift;
+  });
+
+  return list;
+};
 
 export const parseBorealTrails = async (data) => {
   if (!data.level_3) {
     return [];
   }
-  const list = [];
-
-  data.level_3.field_dynamic_content.items.map(trailItem => {
+  const list = data.level_3.field_dynamic_content.items.map((trailItem) => {
     const name = trailItem.title;
     const status = boralLiftTrailStatusOrNull(trailItem.field_trail_open);
     const category = notEmptyStringOrNull(trailItem.field_area);
-    const level = trailLevelOrNull(trailItem.field_participant_level)
+    const level = trailLevelOrNull(trailItem.field_participant_level);
     const trail = {
       name,
       status,
       category,
       level,
     };
-    list.push(trail)
-  })
- return list;
-}
+
+    return trail;
+  });
+
+  return list;
+};

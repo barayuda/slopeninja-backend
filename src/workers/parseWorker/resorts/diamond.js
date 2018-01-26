@@ -1,5 +1,3 @@
-import cheerio from 'cheerio';
-
 import {
   degreeOrNull,
   inchOrNull,
@@ -34,10 +32,10 @@ export const parseDiamondSnow = async ($) => {
   const status = $('.surface-conditions p').first().text().trim();
   const weatherIcon = $('.weather-condition .weather-condition-wrapper .weather-forecast').first().text().trim();
   const temperature = $('.conditions-overlay .row.weather-row .large-4.columns').first().text().trim();
-  //24 Hours
-  const newSnow24Hr = $('.conditions-overlay .row.weather-row .large-4.columns .weather-data').slice(3,4).text().trim();
-  //Base
-  const snowDepthBase = $('.conditions-overlay .row.weather-row .large-4.columns .weather-data').slice(1,2).text().trim();
+  // 24 Hours
+  const newSnow24Hr = $('.conditions-overlay .row.weather-row .large-4.columns .weather-data').slice(3, 4).text().trim();
+  // Base
+  const snowDepthBase = $('.conditions-overlay .row.weather-row .large-4.columns .weather-data').slice(1, 2).text().trim();
   const snowDepthSummit = $('.conditions-overlay .row.weather-row .peak-depth.large-4.columns .weather-data').first().text().trim();
   return {
     ...initialWeather,
@@ -48,24 +46,24 @@ export const parseDiamondSnow = async ($) => {
     snowDepthBase: inchOrNull(snowDepthBase),
     snowDepthSummit: inchOrNull(snowDepthSummit),
   };
-}
+};
 
-export const parseDiamondLiftCounts = async ($) => {
+export const parseDiamondLiftCounts = async () => {
   return {
     ...initialLifts,
   };
-}
+};
 
-export const parseDiamondTrailCounts = async ($) => {
+export const parseDiamondTrailCounts = async () => {
   return {
     ...initialTrails,
   };
-}
+};
 
 export const parseDiamondLifts = async ($) => {
   const list = [];
 
-  $('.lift-trail-conditions .lift-header').map((index, rowElement) => {
+  $('.lift-trail-conditions .lift-header').each((index, rowElement) => {
     const h1Elements = $(rowElement).find('h1');
     const spanElements = $(rowElement).find('span');
 
@@ -79,16 +77,16 @@ export const parseDiamondLifts = async ($) => {
       category,
     };
 
-    list.push(lift)
+    list.push(lift);
   });
 
- return list;
-}
+  return list;
+};
 
 export const parseDiamondTrails = async ($) => {
   const list = [];
 
-  $('.trail').map((index, rowElement) => {
+  $('.trail').each((index, rowElement) => {
     const spanElements = $(rowElement).find('span');
 
     const spanElementName = spanElements[1];
@@ -110,8 +108,8 @@ export const parseDiamondTrails = async ($) => {
       level,
     };
 
-    list.push(trail)
+    list.push(trail);
   });
 
- return list;
-}
+  return list;
+};

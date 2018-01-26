@@ -1,10 +1,6 @@
-import cheerio from 'cheerio';
-
 import {
   degreeOrNull,
   inchOrNull,
-  numberOrNull,
-  weatherStatusOrNull,
   liftTrailStatusOrNull,
   notEmptyStringOrNull,
   trailLevelOrNull,
@@ -32,12 +28,12 @@ const initialTrails = {
 
 export const parseHomewoodSnow = async ($) => {
   const temperature = $('#current_temp_hi').text().trim();
-  //24 Hours
-  const newSnow24Hr = $('#current_snow_conditions table tr td').slice(4,5).text().trim();
-  //Base
-  const snowDepthBase = $('#current_snow_conditions table tr td').slice(1,2).text().trim();
+  // 24 Hours
+  const newSnow24Hr = $('#current_snow_conditions table tr td').slice(4, 5).text().trim();
+  // Base
+  const snowDepthBase = $('#current_snow_conditions table tr td').slice(1, 2).text().trim();
 
-  const snowDepthSummit = $('#current_snow_conditions table tr td').slice(2,3).text().trim();
+  const snowDepthSummit = $('#current_snow_conditions table tr td').slice(2, 3).text().trim();
   return {
     ...initialSnow,
     temperature: degreeOrNull(temperature),
@@ -45,24 +41,24 @@ export const parseHomewoodSnow = async ($) => {
     snowDepthBase: inchOrNull(snowDepthBase),
     snowDepthSummit: inchOrNull(snowDepthSummit),
   };
-}
+};
 
-export const parseHomewoodLiftCounts = async ($) => {
+export const parseHomewoodLiftCounts = async () => {
   return {
     ...initialLifts,
   };
-}
+};
 
-export const parseHomewoodTrailCounts = async ($) => {
+export const parseHomewoodTrailCounts = async () => {
   return {
     ...initialTrails,
   };
-}
+};
 
 export const parseHomewoodLifts = async ($) => {
   const list = [];
 
-  $('.lifts_table .lift_header').map((index, liftHeaderElement) => {
+  $('.lifts_table .lift_header').each((index, liftHeaderElement) => {
     const nameElements = $(liftHeaderElement).find('h4');
     const statusElements = $(liftHeaderElement).find('div');
 
@@ -76,18 +72,17 @@ export const parseHomewoodLifts = async ($) => {
       category,
     };
 
-    list.push(lift)
+    list.push(lift);
   });
 
- return list;
-}
+  return list;
+};
 
 export const parseHomewoodTrails = async ($) => {
   const list = [];
 
-  $('#lifts_wrapper .lifts_table tbody').map((index, tableElement) => {
-    $(tableElement).find('td.beginner, td.intermediate, td.advanced, td.expert').map((index, tdElement) => {
-
+  $('#lifts_wrapper .lifts_table tbody').each((index, tableElement) => {
+    $(tableElement).find('td.beginner, td.intermediate, td.advanced, td.expert').each((i, tdElement) => {
       const statusElement = $(tdElement).next();
       const nameElement = $(tdElement);
       const levelElement = $(tdElement);
@@ -96,7 +91,7 @@ export const parseHomewoodTrails = async ($) => {
       const name = notEmptyStringOrNull($(nameElement).text().trim());
       const status = liftTrailStatusOrNull($(statusElement).text().trim());
       const level = trailLevelOrNull(levelElement.attr('class'));
-      const category = notEmptyStringOrNull($(categoryElement).text().trim())
+      const category = notEmptyStringOrNull($(categoryElement).text().trim());
 
 
       const trail = {
@@ -106,10 +101,9 @@ export const parseHomewoodTrails = async ($) => {
         level,
       };
 
-      list.push(trail)
-
-    })
+      list.push(trail);
+    });
   });
-  
- return list;
-}
+
+  return list;
+};

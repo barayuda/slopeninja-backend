@@ -1,5 +1,7 @@
+import Raven from 'raven';
 import client, { SLOPE_NINJA_DB_SCHEMA } from '../../db/client';
 
+/* eslint-disable no-console */
 const updateResort = async (shortName, resort) => {
   try {
     const numberOfRowsUpdated = await client
@@ -14,8 +16,10 @@ const updateResort = async (shortName, resort) => {
       console.log(shortName, 'is not in database. Skipped metadata update.');
     }
   } catch (error) {
-    console.error('Failed to update metadata for', shortname, error);
+    console.error('Failed to update metadata for', shortName, error);
+    Raven.captureException(error);
   }
 };
+/* eslint-enable */
 
 export default updateResort;

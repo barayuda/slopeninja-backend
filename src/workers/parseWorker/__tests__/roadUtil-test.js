@@ -1,12 +1,10 @@
 import {
-  splitHighwayBody,
   isCaliforniaRoadClosed,
   isCaliforniaRoadOpen,
   isCaliforniaRoadIncident,
   californiaRoadStatusOrNull,
   isNevadaRoadClosed,
   isNevadaRoadOpen,
-  isNevadaRoadIncident,
   nevadaRoadStatusOrNull,
 } from '../roadUtil';
 
@@ -70,7 +68,6 @@ test('can correctly detect a CA road as open', () => {
   expect(isCaliforniaRoadOpen(US50_CA_SAMPLE_INCIDENT)).toBe(false);
   expect(isCaliforniaRoadOpen(US89_CA_SAMPLE_INCIDENT)).toBe(true);
   expect(isCaliforniaRoadOpen(I80_CA_SAMPLE_OPEN)).toBe(true);
-
 });
 
 test('can correctly detect is a CA road is closed', () => {

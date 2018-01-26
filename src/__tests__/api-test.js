@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-fetch';
-import api from '../api';
 import Promise from 'bluebird';
-import client from '../db/client';
 import uuid from 'uuid';
 import statuses from 'statuses';
+
+import api from '../api';
 
 let server;
 let port;
@@ -14,9 +14,11 @@ beforeAll(async () => {
   // convention of accepting a callback as last argument and calling that
   // callback with error as the first argument and success value on the
   // second argument.
-  const listen = Promise.promisify(api.listen, { context: api });
+  // const listen = Promise.promisify(api.listen, { context: api });
   server = await api.listen();
+  /* eslint-disable prefer-destructuring */
   port = server.address().port;
+  /* eslint-enable */
 });
 
 // tear down our tests
@@ -36,9 +38,7 @@ test.skip('returns 12 resorts, one of which is Squaw', async () => {
 
   expect(data.resorts).toHaveLength(12);
 
-  const resort = data.resorts.find(
-    resort => resort.shortName === 'squaw-valley'
-  );
+  const resort = data.resorts.find(r => r.shortName === 'squaw-valley');
 
   expect(resort).toBeDefined();
 });
@@ -50,9 +50,7 @@ test.skip('returns a resort for a given resort shortName', async () => {
     shortName: 'squaw-valley',
   };
 
-  const response = await fetch(
-    `http://localhost:${port}/resorts/${expectedResort.shortName}`
-  );
+  const response = await fetch(`http://localhost:${port}/resorts/${expectedResort.shortName}`);
   const data = await response.json();
 
   expect(data.resort.location).toEqual(expectedResort.location);
@@ -62,9 +60,7 @@ test.skip('returns a resort for a given resort shortName', async () => {
 
 test.skip('fails to return a resort for unknown resort id', async () => {
   const NON_EXISTING_RESORT_ID = '6f535c7a-aedd-409c-875b-09ee2181b3d7';
-  const response = await fetch(
-    `http://localhost:${port}/resorts/${NON_EXISTING_RESORT_ID}`
-  );
+  const response = await fetch(`http://localhost:${port}/resorts/${NON_EXISTING_RESORT_ID}`);
 
   expect(response.status).toEqual(statuses('Not Found'));
 });
@@ -75,11 +71,11 @@ test.skip('subscribes to newsletter with valid email', async () => {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     }),
     body: JSON.stringify({
-      email: dummyEmail
-    })
+      email: dummyEmail,
+    }),
   });
   const data = await response.json();
 
@@ -91,18 +87,16 @@ test('fails to subscribe to newsletter with invalid email', async () => {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     }),
     body: JSON.stringify({
-      email: 'xx@xx'
-    })
+      email: 'xx@xx',
+    }),
   });
   const data = await response.json();
 
   expect(response.status).toEqual(statuses('Bad Request'));
-  expect(data.error).toEqual(
-    'child "email" fails because ["email" must be a valid email]'
-  );
+  expect(data.error).toEqual('child "email" fails because ["email" must be a valid email]');
 });
 
 test('fails to subscribe to newsletter with no email', async () => {
@@ -110,16 +104,14 @@ test('fails to subscribe to newsletter with no email', async () => {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     }),
     body: JSON.stringify({
-      email: ''
-    })
+      email: '',
+    }),
   });
   const data = await response.json();
 
   expect(response.status).toEqual(statuses('Bad Request'));
-  expect(data.error).toEqual(
-    'child "email" fails because ["email" is not allowed to be empty]'
-  );
+  expect(data.error).toEqual('child "email" fails because ["email" is not allowed to be empty]');
 });

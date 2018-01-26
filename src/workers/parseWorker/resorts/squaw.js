@@ -1,4 +1,3 @@
-import cheerio from 'cheerio';
 import {
   degreeOrNull,
   inchOrNull,
@@ -32,11 +31,11 @@ const initialTrails = {
 export const parseSquawSnow = async ($) => {
   const weatherIcon = $('#squaw-elevation-0 .row.current .cellwrapper .cell h6').first().text().trim();
   const temperature = $('#squaw-elevation-0 .row.current .cellwrapper .cell .value').first().text().trim();
-  //24
-  const newSnow24Hr = $('.row.snow .cellwrapper .cell .value').slice(1,2).text().trim();
+  // 24
+  const newSnow24Hr = $('.row.snow .cellwrapper .cell .value').slice(1, 2).text().trim();
   // //Base
-  const snowDepthBase = $('#squaw-elevation-2 .row.snow .cellwrapper .cell .value').slice(3,4).text().trim();
-  const snowDepthSummit = $('#squaw-elevation-1 .row.snow .cellwrapper .cell .value').slice(3,4).text().trim();
+  const snowDepthBase = $('#squaw-elevation-2 .row.snow .cellwrapper .cell .value').slice(3, 4).text().trim();
+  const snowDepthSummit = $('#squaw-elevation-1 .row.snow .cellwrapper .cell .value').slice(3, 4).text().trim();
 
   return {
     ...initialWeather,
@@ -47,41 +46,48 @@ export const parseSquawSnow = async ($) => {
     snowDepthSummit: inchOrNull(snowDepthSummit),
 
   };
-}
-
-
+};
 
 export const parseSquawLiftCounts = async ($) => {
-  const open = numberOrNull(Number.parseInt($('#squaw-report .global-stats .cell.open-lifts .value').text().trim()));
+  const open = numberOrNull(Number.parseInt(
+    $('#squaw-report .global-stats .cell.open-lifts .value').text().trim(),
+    10,
+  ));
+
   return {
     ...initialLifts,
     open: numberOrNull(open),
   };
-}
+};
 
 export const parseSquawTrailCounts = async ($) => {
-  const open = numberOrNull(Number.parseInt($('#squaw-report .global-stats .cell.open-trails .value').text().trim()));
+  const open = numberOrNull(Number.parseInt(
+    $('#squaw-report .global-stats .cell.open-trails .value').text().trim(),
+    10,
+  ));
+
   return {
     ...initialTrails,
     open: numberOrNull(open),
   };
-}
+};
 
 
 export const parseSquawLifts = async ($) => {
   const list = [];
 
-  $('#squaw-report .lift').map((index, rowElement) => {
+  $('#squaw-report .lift').each((index, rowElement) => {
     // squaw messed up their lifts list by including a shuttle in it
     // we need to make sure we exclude that from the list
-    const isShuttle = $(rowElement).text().trim().toLowerCase().includes('shuttle');
-    if(isShuttle) {
+    const isShuttle = $(rowElement).text().trim().toLowerCase()
+      .includes('shuttle');
+    if (isShuttle) {
       return;
     }
 
     const columnElements = $(rowElement).find('.cell');
     const nameElement = columnElements[0];
-    const statusContainerElement = columnElements[3];
+    // const statusContainerElement = columnElements[3];
 
     const statusElement = $(columnElements[3]).find('span[class^="icon-status"]');
 
@@ -97,20 +103,20 @@ export const parseSquawLifts = async ($) => {
       status,
       category,
     };
-    list.push(lift)
+    list.push(lift);
   });
 
- return list;
-}
+  return list;
+};
 
 export const parseSquawTrails = async ($) => {
   const list = [];
 
-  $('#squaw-report .runs .trail').map((index, rowElement) => {
+  $('#squaw-report .runs .trail').each((index, rowElement) => {
     const columnElements = $(rowElement).find('.cell');
     const nameElement = columnElements[0];
     const levelElement = columnElements[1];
-    const statusContainerElement = columnElements[3];
+    // const statusContainerElement = columnElements[3];
 
     const statusElement = $(columnElements[3]).find('span[class^="icon-status"]');
 
@@ -133,8 +139,8 @@ export const parseSquawTrails = async ($) => {
       category,
       level,
     };
-    list.push(trail)
+    list.push(trail);
   });
 
- return list;
-}
+  return list;
+};

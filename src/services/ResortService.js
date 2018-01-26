@@ -1,19 +1,21 @@
+import Raven from 'raven';
 import client, {
-  SLOPE_NINJA_DB_SCHEMA
+  SLOPE_NINJA_DB_SCHEMA,
 } from '../db/client';
 
 import redisClient from '../db/redisClient';
 
+// Temporarily disable class-methods-use-this before we fix it across the project
+/* eslint-disable class-methods-use-this */
+
 class ResortService {
   async getResorts() {
     const resorts = await client
-     .withSchema(SLOPE_NINJA_DB_SCHEMA)
-     .select('*')
-     .from('resorts');
+      .withSchema(SLOPE_NINJA_DB_SCHEMA)
+      .select('*')
+      .from('resorts');
 
-    return resorts.map(
-      ({id, metaData, shortName}) => ({ id, shortName, ...metaData })
-    );
+    return resorts.map(({ id, metaData, shortName }) => ({ id, shortName, ...metaData }));
   }
 
   async findById(resortId) {
@@ -23,8 +25,8 @@ class ResortService {
       .from('resorts')
       .where('id', resortId);
 
-    if(!resort) {
-      return;
+    if (!resort) {
+      return null;
     }
 
     const { id, metaData, shortName } = resort;
@@ -38,8 +40,8 @@ class ResortService {
       .from('resorts')
       .where('shortName', shortName);
 
-    if(!resort) {
-      return;
+    if (!resort) {
+      return null;
     }
 
     const { id, metaData } = resort;
@@ -60,8 +62,11 @@ class ResortService {
 
     try {
       lastSnow = JSON.parse(lastSnowRaw);
-    } catch(error) {
+    } catch (error) {
+      Raven.captureException(error);
+      /* eslint-disable no-console */
       console.log('Error parsing last snow metadata');
+      /* eslint-enable */
     }
 
     return lastSnow;

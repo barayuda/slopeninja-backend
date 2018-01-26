@@ -4,9 +4,9 @@ import {
   parseHeavenlyLiftCounts,
   parseHeavenlyLifts,
   parseHeavenlyTrails,
-  parseHeavenlyTrailCounts
+  parseHeavenlyTrailCounts,
 } from '../heavenly';
-import { createHtmlParser, removeBackSlashes } from '../../parserFactory';
+import { createHtmlParser } from '../../parserFactory';
 
 test('fetches Heavenly snow data correctly', async () => {
   const htmlText = fs.readFileSync(`${__dirname}/__fixtures__/heavenly-weather.html.input`);
@@ -23,7 +23,7 @@ test('fetches Heavenly snow data correctly', async () => {
       snowDepthSummit: 5,
     },
   });
-})
+});
 
 test('fetches all null for nonexisting snow values', async () => {
   const resortData = await createHtmlParser('snow', parseHeavenlySnow)('<html></html>');
@@ -36,7 +36,7 @@ test('fetches all null for nonexisting snow values', async () => {
       newSnow: null,
       snowDepthBase: null,
       snowDepthSummit: null,
-    }
+    },
   });
 });
 
@@ -47,7 +47,7 @@ test('fetches Heavenly lifts data correctly', async () => {
     liftCounts: {
       total: 28,
       open: 2,
-    }
+    },
   });
 });
 
@@ -57,7 +57,7 @@ test('fetches all null for nonexisting lift values', async () => {
     liftCounts: {
       total: null,
       open: null,
-    }
+    },
   });
 });
 
@@ -68,7 +68,7 @@ test('fetches Heavenly trails data correctly', async () => {
     trailCounts: {
       total: 97,
       open: 2,
-    }
+    },
   });
 });
 
@@ -78,7 +78,7 @@ test('fetches all null for nonexisting trails values', async () => {
     trailCounts: {
       total: null,
       open: null,
-    }
+    },
   });
 });
 

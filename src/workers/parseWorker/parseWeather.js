@@ -13,12 +13,12 @@ export const parseWeather = async (data) => {
     return {
       ...initialWeather,
     };
-  };
+  }
   const weatherIcon = data.current_observation.icon;
-  const temperature = Number.parseInt(data.current_observation.temp_f);
+  const temperature = Number.parseInt(data.current_observation.temp_f, 10);
   return {
     ...initialWeather,
     weatherIcon: weatherStatusOrNull(weatherIcon),
     temperature: numberOrNull(temperature),
-  }
-}
+  };
+};

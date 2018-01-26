@@ -1,12 +1,6 @@
-import cheerio from 'cheerio';
-
 import {
-  degreeOrNull,
   inchOrNull,
-  resortStatusOrNull,
-  weatherStatusOrNull,
   liftTrailStatusOrNull,
-  notEmptyStringOrNull,
   trailLevelOrNull,
   numberOrNull,
   removeNumberInFrontOfName,
@@ -34,7 +28,7 @@ const initialTrails = {
   open: null,
 };
 
-export const parseKirkwoodSnow = async $ => {
+export const parseKirkwoodSnow = async ($) => {
   const snowReportData = extractJSONFromScriptElement(
     $,
     'snowReportSettings',
@@ -47,31 +41,24 @@ export const parseKirkwoodSnow = async $ => {
     ...initialSnow,
     // status: resortStatusOrNull(),
     // temperature: degreeOrNull(temperature),
-    newSnow: inchOrNull(
-      snowReportData ?
+    newSnow: inchOrNull(snowReportData ?
       `${snowReportData.TwentyFourHourSnowfall.Inches} inches` :
-      null,
-    ),
+      null),
     // snowDepthBase: inchOrNull(snowDepthBase),
-    snowDepthSummit: inchOrNull(
-      snowReportData ?
+    snowDepthSummit: inchOrNull(snowReportData ?
       `${snowReportData.BaseDepth.Inches} inches` :
-      null,
-    ),
+      null),
   };
 };
 
-export const parseKirkwoodLiftCounts = async $ => {
+export const parseKirkwoodLiftCounts = async ($) => {
   const openLifts = Number.parseInt(
-    $('.c118__number1--v1')
-      .first()
-      .text(),
+    $('.c118__number1--v1').first().text(),
+    10,
   );
   const totalLifts = Number.parseInt(
-    $('.c118__number2--v1')
-      .first()
-      .text()
-      .replace('/', ''),
+    $('.c118__number2--v1').first().text().replace('/', ''),
+    10,
   );
 
   return {
@@ -81,18 +68,16 @@ export const parseKirkwoodLiftCounts = async $ => {
   };
 };
 
-export const parseKirkwoodTrailCounts = async $ => {
+export const parseKirkwoodTrailCounts = async ($) => {
   const openTrails = Number.parseInt(
-    $('.c118__number1--v1')
-      .slice(1, 2)
-      .text(),
+    $('.c118__number1--v1').slice(1, 2).text(),
+    10,
   );
   const totalTrails = Number.parseInt(
-    $('.c118__number2--v1')
-      .slice(1, 2)
-      .text()
-      .replace('/', ''),
+    $('.c118__number2--v1').slice(1, 2).text().replace('/', ''),
+    10,
   );
+
   return {
     ...initialTrails,
     total: numberOrNull(totalTrails),
@@ -100,7 +85,7 @@ export const parseKirkwoodTrailCounts = async $ => {
   };
 };
 
-export const parseKirkwoodLifts = async $ => {
+export const parseKirkwoodLifts = async ($) => {
   const liftsReportData = extractJSONFromScriptElement(
     $,
     'TerrainStatusFeed',
@@ -109,20 +94,18 @@ export const parseKirkwoodLifts = async $ => {
     ['{', '}'],
   );
 
-  let allLifts = []
+  let allLifts = [];
   if (liftsReportData) {
-    allLifts = liftsReportData.Lifts.map(
-      lift => ({
-        name: removeNumberInFrontOfName(lift.Name),
-        category: lift.Mountain,
-        status: liftTrailStatusOrNull(`${lift.Status}`),
-      })
-    )
+    allLifts = liftsReportData.Lifts.map(lift => ({
+      name: removeNumberInFrontOfName(lift.Name),
+      category: lift.Mountain,
+      status: liftTrailStatusOrNull(`${lift.Status}`),
+    }));
   }
   return allLifts;
 };
 
-export const parseKirkwoodTrails = async $ => {
+export const parseKirkwoodTrails = async ($) => {
   const trailsReportData = extractJSONFromScriptElement(
     $,
     'TerrainStatusFeed',
@@ -131,27 +114,23 @@ export const parseKirkwoodTrails = async $ => {
     ['{', '}'],
   );
 
-  let allTrails = []
+  let allTrails = [];
   if (trailsReportData) {
     allTrails = trailsReportData.GroomingAreas.reduce((trails, category) => {
-      category.Runs.map(
-        run => {
-          const trail = {
-            name: run.Name,
-            status: liftTrailStatusOrNull(`${run.IsOpen}`),
-            category: category.Name,
-            level: trailLevelOrNull(`${run.Type}`),
-          };
-          trails.push(trail);
-        }
-      )
+      category.Runs.forEach((run) => {
+        const trail = {
+          name: run.Name,
+          status: liftTrailStatusOrNull(`${run.IsOpen}`),
+          category: category.Name,
+          level: trailLevelOrNull(`${run.Type}`),
+        };
+        trails.push(trail);
+      });
       return trails;
     }, []);
 
-    const trailsExcludingParks = allTrails.filter(
-      trail =>
-      !trail.name.includes('Terrain Park')
-    );
+    const trailsExcludingParks = allTrails.filter(trail =>
+      !trail.name.includes('Terrain Park'));
     return trailsExcludingParks;
   }
 
